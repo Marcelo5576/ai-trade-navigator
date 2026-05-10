@@ -43,7 +43,7 @@ export function NewsAndAI() {
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
             <Bot className="w-5 h-5 text-primary" />
-            <h3 className="font-display font-bold text-xl">Assistente Quantum</h3>
+            <h3 className="font-display font-bold text-xl">Assistente Navigator AI</h3>
           </div>
           <span className="text-xs font-mono text-muted-foreground">GPT-5 + Gemini 3</span>
         </div>
