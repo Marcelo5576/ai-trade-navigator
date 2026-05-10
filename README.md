@@ -74,6 +74,21 @@ npm run dev
 npm run build
 ```
 
+## Production (Node / VPS)
+
+This project is prepared to run behind Nginx on a Node server.
+
+```bash
+npm install --no-package-lock
+npm run build
+PORT=3020 npm run start
+```
+
+Health endpoints remain available in production:
+
+- `/health`
+- `/api/health`
+
 ## Smoke Test
 
 ```bash
@@ -102,8 +117,9 @@ Keep `PAYMENT_PROVIDER=mock` to expose safe plan and billing responses without r
 3. Set `DEMO_AUTH_ENABLED=false` unless you intentionally want demo login.
 4. Run `npm install --no-package-lock`.
 5. Run `npm run build`.
-6. Run `BASE_URL=https://your-domain ./scripts/smoke_saas.sh`.
-7. Confirm:
+6. Start the Node server with `PORT=3020 npm run start`.
+7. Run `BASE_URL=https://your-domain ./scripts/smoke_saas.sh`.
+8. Confirm:
    - `/health`
    - `/api/health`
    - `/api/plans`
