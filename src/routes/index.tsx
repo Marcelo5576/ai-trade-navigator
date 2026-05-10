@@ -1,26 +1,36 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Header } from "@/components/trading/Header";
+import { TickerStrip } from "@/components/trading/TickerStrip";
+import { Hero } from "@/components/trading/Hero";
+import { Stats } from "@/components/trading/Stats";
+import { Scanner } from "@/components/trading/Scanner";
+import { NewsAndAI } from "@/components/trading/NewsAndAI";
+import { Features } from "@/components/trading/Features";
+import { Footer } from "@/components/trading/Footer";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Quantum.AI — Inteligência quantitativa para traders" },
+      { name: "description", content: "Central completa para o operador moderno: scanner de setups, sinais de IA, notícias com sentimento e backtesting em tempo real." },
+      { property: "og:title", content: "Quantum.AI — Trading com IA" },
+      { property: "og:description", content: "Scanner, sinais IA, notícias e backtest em uma só plataforma." },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-screen">
+      <Header />
+      <TickerStrip />
+      <Hero />
+      <Stats />
+      <Scanner />
+      <NewsAndAI />
+      <Features />
+      <Footer />
     </div>
   );
-}
-
-function Index() {
-  return <PlaceholderIndex />;
 }
