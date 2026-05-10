@@ -12,10 +12,15 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SinaisRouteImport } from './routes/sinais'
 import { Route as ScannerRouteImport } from './routes/scanner'
 import { Route as NoticiasRouteImport } from './routes/noticias'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as EstrategiasRouteImport } from './routes/estrategias'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as BacktestRouteImport } from './routes/backtest'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminSystemRouteImport } from './routes/admin.system'
+import { Route as AdminBillingRouteImport } from './routes/admin.billing'
 
 const SinaisRoute = SinaisRouteImport.update({
   id: '/sinais',
@@ -30,6 +35,11 @@ const ScannerRoute = ScannerRouteImport.update({
 const NoticiasRoute = NoticiasRouteImport.update({
   id: '/noticias',
   path: '/noticias',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EstrategiasRoute = EstrategiasRouteImport.update({
@@ -47,75 +57,127 @@ const BacktestRoute = BacktestRouteImport.update({
   path: '/backtest',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSystemRoute = AdminSystemRouteImport.update({
+  id: '/system',
+  path: '/system',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminBillingRoute = AdminBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/backtest': typeof BacktestRoute
   '/dashboard': typeof DashboardRoute
   '/estrategias': typeof EstrategiasRoute
+  '/login': typeof LoginRoute
   '/noticias': typeof NoticiasRoute
   '/scanner': typeof ScannerRoute
   '/sinais': typeof SinaisRoute
+  '/admin/billing': typeof AdminBillingRoute
+  '/admin/system': typeof AdminSystemRoute
+  '/admin/users': typeof AdminUsersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/backtest': typeof BacktestRoute
   '/dashboard': typeof DashboardRoute
   '/estrategias': typeof EstrategiasRoute
+  '/login': typeof LoginRoute
   '/noticias': typeof NoticiasRoute
   '/scanner': typeof ScannerRoute
   '/sinais': typeof SinaisRoute
+  '/admin/billing': typeof AdminBillingRoute
+  '/admin/system': typeof AdminSystemRoute
+  '/admin/users': typeof AdminUsersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/backtest': typeof BacktestRoute
   '/dashboard': typeof DashboardRoute
   '/estrategias': typeof EstrategiasRoute
+  '/login': typeof LoginRoute
   '/noticias': typeof NoticiasRoute
   '/scanner': typeof ScannerRoute
   '/sinais': typeof SinaisRoute
+  '/admin/billing': typeof AdminBillingRoute
+  '/admin/system': typeof AdminSystemRoute
+  '/admin/users': typeof AdminUsersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/backtest'
     | '/dashboard'
     | '/estrategias'
+    | '/login'
     | '/noticias'
     | '/scanner'
     | '/sinais'
+    | '/admin/billing'
+    | '/admin/system'
+    | '/admin/users'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/backtest'
     | '/dashboard'
     | '/estrategias'
+    | '/login'
     | '/noticias'
     | '/scanner'
     | '/sinais'
+    | '/admin/billing'
+    | '/admin/system'
+    | '/admin/users'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/backtest'
     | '/dashboard'
     | '/estrategias'
+    | '/login'
     | '/noticias'
     | '/scanner'
     | '/sinais'
+    | '/admin/billing'
+    | '/admin/system'
+    | '/admin/users'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   BacktestRoute: typeof BacktestRoute
   DashboardRoute: typeof DashboardRoute
   EstrategiasRoute: typeof EstrategiasRoute
+  LoginRoute: typeof LoginRoute
   NoticiasRoute: typeof NoticiasRoute
   ScannerRoute: typeof ScannerRoute
   SinaisRoute: typeof SinaisRoute
@@ -144,6 +206,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NoticiasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/estrategias': {
       id: '/estrategias'
       path: '/estrategias'
@@ -165,6 +234,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BacktestRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -172,14 +248,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/system': {
+      id: '/admin/system'
+      path: '/system'
+      fullPath: '/admin/system'
+      preLoaderRoute: typeof AdminSystemRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/billing': {
+      id: '/admin/billing'
+      path: '/billing'
+      fullPath: '/admin/billing'
+      preLoaderRoute: typeof AdminBillingRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminBillingRoute: typeof AdminBillingRoute
+  AdminSystemRoute: typeof AdminSystemRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminBillingRoute: AdminBillingRoute,
+  AdminSystemRoute: AdminSystemRoute,
+  AdminUsersRoute: AdminUsersRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   BacktestRoute: BacktestRoute,
   DashboardRoute: DashboardRoute,
   EstrategiasRoute: EstrategiasRoute,
+  LoginRoute: LoginRoute,
   NoticiasRoute: NoticiasRoute,
   ScannerRoute: ScannerRoute,
   SinaisRoute: SinaisRoute,
@@ -187,3 +300,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
