@@ -5,14 +5,16 @@
 //     error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... } }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { loadEnv } from "vite";
 
+const loadedEnv = loadEnv(process.env.NODE_ENV ?? "production", process.cwd(), "");
 const allowedHosts = Array.from(
   new Set(
     [
       "localhost",
       "127.0.0.1",
-      process.env.APP_DOMAIN,
-      process.env.PUBLIC_URL ? new URL(process.env.PUBLIC_URL).hostname : undefined,
+      loadedEnv.APP_DOMAIN,
+      loadedEnv.PUBLIC_URL ? new URL(loadedEnv.PUBLIC_URL).hostname : undefined,
     ].filter(Boolean),
   ),
 );
