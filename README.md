@@ -76,7 +76,9 @@ npm run build
 
 ## Production (Node / VPS)
 
-This project is prepared to run behind Nginx on a Node server.
+This project can run safely behind Nginx on a Node server using Vite's preview server.
+It is a good isolated deployment option for a frontend-first SaaS while we keep the rest
+of your infrastructure untouched.
 
 ```bash
 npm install --no-package-lock
