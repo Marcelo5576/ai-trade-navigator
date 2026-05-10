@@ -1,10 +1,20 @@
 import { Activity } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+
+const NAV = [
+  { label: "Dashboard", to: "/dashboard" as const },
+  { label: "Scanner", to: "/scanner" as const },
+  { label: "Sinais IA", to: "/sinais" as const },
+  { label: "Notícias", to: "/noticias" as const },
+  { label: "Backtest", to: "/backtest" as const },
+  { label: "Estratégias", to: "/estrategias" as const },
+];
 
 export function Header() {
   return (
     <header className="sticky top-0 z-50 backdrop-blur-xl bg-background/70 border-b border-border">
       <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <Link to="/" className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "var(--gradient-neon)" }}>
             <Activity className="w-5 h-5 text-background" strokeWidth={2.5} />
           </div>
@@ -12,10 +22,17 @@ export function Header() {
             <div className="font-display font-bold text-lg leading-none">QUANTUM<span className="gradient-text">.AI</span></div>
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground">trading intelligence</div>
           </div>
-        </div>
+        </Link>
         <nav className="hidden md:flex items-center gap-1 text-sm">
-          {["Dashboard", "Scanner", "Sinais IA", "Notícias", "Backtest", "Estratégias"].map((n) => (
-            <a key={n} href="#" className="px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors">{n}</a>
+          {NAV.map((n) => (
+            <Link
+              key={n.to}
+              to={n.to}
+              className="px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+              activeProps={{ className: "px-3 py-2 rounded-lg text-foreground bg-secondary" }}
+            >
+              {n.label}
+            </Link>
           ))}
         </nav>
         <div className="flex items-center gap-3">
@@ -23,9 +40,9 @@ export function Header() {
             <span className="live-dot" />
             <span className="text-xs font-mono">MERCADO ABERTO</span>
           </div>
-          <button className="px-4 py-2 rounded-lg font-medium text-sm text-primary-foreground glow" style={{ background: "var(--gradient-neon)" }}>
+          <Link to="/dashboard" className="px-4 py-2 rounded-lg font-medium text-sm text-primary-foreground glow" style={{ background: "var(--gradient-neon)" }}>
             Operar
-          </button>
+          </Link>
         </div>
       </div>
     </header>
