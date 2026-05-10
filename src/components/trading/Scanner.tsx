@@ -65,7 +65,7 @@ export function Scanner() {
 
               <div className="flex items-baseline justify-between mb-2">
                 <div className="font-mono text-2xl font-bold">
-                  {a.type === "Cripto" || a.symbol === "BTC" ? "$" : "R$"}{a.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  {a.type === "Cripto" || a.symbol === "BTC" ? "$" : "R$"}{a.price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
                 <div className={`font-mono text-sm font-bold ${positive ? "text-bull" : "text-bear"}`}>
                   {positive ? "+" : ""}{a.change.toFixed(2)}%

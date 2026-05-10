@@ -9,8 +9,44 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SinaisRouteImport } from './routes/sinais'
+import { Route as ScannerRouteImport } from './routes/scanner'
+import { Route as NoticiasRouteImport } from './routes/noticias'
+import { Route as EstrategiasRouteImport } from './routes/estrategias'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as BacktestRouteImport } from './routes/backtest'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SinaisRoute = SinaisRouteImport.update({
+  id: '/sinais',
+  path: '/sinais',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScannerRoute = ScannerRouteImport.update({
+  id: '/scanner',
+  path: '/scanner',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NoticiasRoute = NoticiasRouteImport.update({
+  id: '/noticias',
+  path: '/noticias',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EstrategiasRoute = EstrategiasRouteImport.update({
+  id: '/estrategias',
+  path: '/estrategias',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BacktestRoute = BacktestRouteImport.update({
+  id: '/backtest',
+  path: '/backtest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +55,116 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/backtest': typeof BacktestRoute
+  '/dashboard': typeof DashboardRoute
+  '/estrategias': typeof EstrategiasRoute
+  '/noticias': typeof NoticiasRoute
+  '/scanner': typeof ScannerRoute
+  '/sinais': typeof SinaisRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/backtest': typeof BacktestRoute
+  '/dashboard': typeof DashboardRoute
+  '/estrategias': typeof EstrategiasRoute
+  '/noticias': typeof NoticiasRoute
+  '/scanner': typeof ScannerRoute
+  '/sinais': typeof SinaisRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/backtest': typeof BacktestRoute
+  '/dashboard': typeof DashboardRoute
+  '/estrategias': typeof EstrategiasRoute
+  '/noticias': typeof NoticiasRoute
+  '/scanner': typeof ScannerRoute
+  '/sinais': typeof SinaisRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/backtest'
+    | '/dashboard'
+    | '/estrategias'
+    | '/noticias'
+    | '/scanner'
+    | '/sinais'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/backtest'
+    | '/dashboard'
+    | '/estrategias'
+    | '/noticias'
+    | '/scanner'
+    | '/sinais'
+  id:
+    | '__root__'
+    | '/'
+    | '/backtest'
+    | '/dashboard'
+    | '/estrategias'
+    | '/noticias'
+    | '/scanner'
+    | '/sinais'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BacktestRoute: typeof BacktestRoute
+  DashboardRoute: typeof DashboardRoute
+  EstrategiasRoute: typeof EstrategiasRoute
+  NoticiasRoute: typeof NoticiasRoute
+  ScannerRoute: typeof ScannerRoute
+  SinaisRoute: typeof SinaisRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sinais': {
+      id: '/sinais'
+      path: '/sinais'
+      fullPath: '/sinais'
+      preLoaderRoute: typeof SinaisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scanner': {
+      id: '/scanner'
+      path: '/scanner'
+      fullPath: '/scanner'
+      preLoaderRoute: typeof ScannerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/noticias': {
+      id: '/noticias'
+      path: '/noticias'
+      fullPath: '/noticias'
+      preLoaderRoute: typeof NoticiasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/estrategias': {
+      id: '/estrategias'
+      path: '/estrategias'
+      fullPath: '/estrategias'
+      preLoaderRoute: typeof EstrategiasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/backtest': {
+      id: '/backtest'
+      path: '/backtest'
+      fullPath: '/backtest'
+      preLoaderRoute: typeof BacktestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +177,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BacktestRoute: BacktestRoute,
+  DashboardRoute: DashboardRoute,
+  EstrategiasRoute: EstrategiasRoute,
+  NoticiasRoute: NoticiasRoute,
+  ScannerRoute: ScannerRoute,
+  SinaisRoute: SinaisRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
