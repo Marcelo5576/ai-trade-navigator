@@ -185,15 +185,29 @@ export function latestBacktestMetrics(run: QuantBacktestRun | null) {
 
 export function summarizeQuantStatus(
   operation: QuantOperationPayload | null,
-  metrics: Record<string, unknown> | null,
+  health: Record<string, unknown> | null,
+  metrics: Record<string, unknown> | null = null,
 ) {
-  const summary = (operation?.summary || operation?.metrics || {}) as Record<string, unknown>;
-  const health = (metrics?.health || {}) as Record<string, unknown>;
+  const summary = (operation?.summary || operation?.metrics || metrics || {}) as Record<
+    string,
+    unknown
+  >;
+  const operationMetrics = (operation?.metrics || metrics || {}) as Record<string, unknown>;
+  const scheduler = (operation?.scheduler || {}) as Record<string, unknown>;
+  const botRunning = Boolean(
+    health?.bot_running ?? scheduler.bot_running ?? operationMetrics.bot_running ?? false,
+  );
+  const confidenceScore = Number(
+    operationMetrics.confidence_score ?? summary.confidence_score ?? 0,
+  );
+  const confidenceLabel = String(
+    operationMetrics.confidence_label ?? summary.confidence_label ?? "monitorando",
+  );
   return [
     {
       label: "Ativos analisados",
       value: String(operation?.watchlist?.length || 0),
-      detail: `bot ${health.bot_running ? "ativo" : "parado"}`,
+      detail: `bot ${botRunning ? "ativo" : "monitorando"}`,
     },
     {
       label: "Setups aprovados",
@@ -207,13 +221,8 @@ export function summarizeQuantStatus(
     },
     {
       label: "Score médio IA",
-      value: String(
-        (operation?.metrics as Record<string, unknown> | undefined)?.confidence_score ?? 0,
-      ),
-      detail: String(
-        (operation?.metrics as Record<string, unknown> | undefined)?.confidence_label ||
-          "monitorando",
-      ),
+      value: String(confidenceScore),
+      detail: confidenceLabel,
     },
   ];
 }

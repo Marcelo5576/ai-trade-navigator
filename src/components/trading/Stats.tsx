@@ -32,6 +32,7 @@ export function Stats() {
 
   const quantStats = summarizeQuantStatus(
     data.data?.operation?.data || null,
+    (data.data?.health?.data as Record<string, unknown> | null) || null,
     (data.data?.metrics?.data as Record<string, unknown> | null) || null,
   );
   const stats = quantStats.map((item, index) => ({
