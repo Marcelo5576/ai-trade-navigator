@@ -6,6 +6,10 @@ export type ServerRuntimeConfig = PublicAppConfig & {
   corsOrigins: string[];
   paymentProvider: string;
   sessionSecret: string;
+  quantBridgeEnabled: boolean;
+  quantApiBaseUrl: string;
+  quantGodUrl: string;
+  quantApiTimeoutMs: number;
   demoAuthEnabled: boolean;
   demoAdminEmail: string;
   demoAdminPassword: string;
@@ -25,6 +29,10 @@ const DEFAULTS: ServerRuntimeConfig = {
   corsOrigins: ["http://localhost:3000", "http://127.0.0.1:3000"],
   paymentProvider: "mock",
   sessionSecret: "change-me-session-secret",
+  quantBridgeEnabled: true,
+  quantApiBaseUrl: "https://trade.apexgol.com.br",
+  quantGodUrl: "https://quant.apexgol.com.br",
+  quantApiTimeoutMs: 15000,
   demoAuthEnabled: true,
   demoAdminEmail: "admin@example.com",
   demoAdminPassword: "change-me-admin",
@@ -66,6 +74,13 @@ function readList(env: ServerEnvSource, key: string, fallback: string[]) {
     .filter(Boolean);
 }
 
+function readNumber(env: ServerEnvSource, key: string, fallback: number) {
+  const raw = readEnvValue(env, key);
+  if (!raw) return fallback;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
 export function getServerRuntimeConfig(env: ServerEnvSource): ServerRuntimeConfig {
   const environment =
     readEnvValue(env, "ENVIRONMENT") || readEnvValue(env, "NODE_ENV") || DEFAULTS.environment;
@@ -81,6 +96,10 @@ export function getServerRuntimeConfig(env: ServerEnvSource): ServerRuntimeConfi
     corsOrigins: readList(env, "CORS_ORIGINS", DEFAULTS.corsOrigins),
     paymentProvider: readEnvValue(env, "PAYMENT_PROVIDER") || DEFAULTS.paymentProvider,
     sessionSecret: readEnvValue(env, "SESSION_SECRET") || DEFAULTS.sessionSecret,
+    quantBridgeEnabled: readBoolean(env, "QUANT_BRIDGE_ENABLED", DEFAULTS.quantBridgeEnabled),
+    quantApiBaseUrl: readEnvValue(env, "QUANT_API_BASE_URL") || DEFAULTS.quantApiBaseUrl,
+    quantGodUrl: readEnvValue(env, "QUANT_GOD_URL") || DEFAULTS.quantGodUrl,
+    quantApiTimeoutMs: readNumber(env, "QUANT_API_TIMEOUT_MS", DEFAULTS.quantApiTimeoutMs),
     demoAuthEnabled: readBoolean(
       env,
       "DEMO_AUTH_ENABLED",

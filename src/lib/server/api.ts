@@ -13,6 +13,19 @@ import { getPublicRuntimeConfig, getServerRuntimeConfig, type ServerEnvSource } 
 import { jsonResponse } from "./http";
 import { logError, logInfo } from "./logger";
 import { listPlans } from "./plans";
+import {
+  getQuantBacktests,
+  getQuantHealth,
+  getQuantLogs,
+  getQuantMetrics,
+  getQuantNews,
+  getQuantOperationState,
+  getQuantOpportunities,
+  getQuantSignals,
+  getQuantStatusSnapshot,
+  runQuantScanner,
+  sendQuantTelegramTest,
+} from "./quant";
 import { getSystemStatus } from "./system";
 
 async function parseJsonBody(request: Request) {
@@ -133,6 +146,54 @@ export async function handleCustomRequest(
   if (pathname === "/api/dashboard/summary" && request.method === "GET") {
     const session = await getSessionFromRequest(request, env);
     return jsonResponse(getDashboardSummary(session, request));
+  }
+
+  if (pathname === "/api/quant/health" && request.method === "GET") {
+    return jsonResponse(await getQuantHealth(env));
+  }
+
+  if (pathname === "/api/quant/status" && request.method === "GET") {
+    return jsonResponse(
+      await getQuantStatusSnapshot(env, url.searchParams.get("symbol") || "BTCUSDT"),
+    );
+  }
+
+  if (pathname === "/api/quant/operation" && request.method === "GET") {
+    return jsonResponse(
+      await getQuantOperationState(env, url.searchParams.get("symbol") || "BTCUSDT"),
+    );
+  }
+
+  if (pathname === "/api/quant/signals" && request.method === "GET") {
+    return jsonResponse(await getQuantSignals(env));
+  }
+
+  if (pathname === "/api/quant/news" && request.method === "GET") {
+    return jsonResponse(await getQuantNews(env));
+  }
+
+  if (pathname === "/api/quant/opportunities" && request.method === "GET") {
+    return jsonResponse(await getQuantOpportunities(env));
+  }
+
+  if (pathname === "/api/quant/backtests" && request.method === "GET") {
+    return jsonResponse(await getQuantBacktests(env));
+  }
+
+  if (pathname === "/api/quant/metrics" && request.method === "GET") {
+    return jsonResponse(await getQuantMetrics(env));
+  }
+
+  if (pathname === "/api/quant/logs" && request.method === "GET") {
+    return jsonResponse(await getQuantLogs(env));
+  }
+
+  if (pathname === "/api/quant/scanner/run-once" && request.method === "POST") {
+    return jsonResponse(await runQuantScanner(env));
+  }
+
+  if (pathname === "/api/quant/telegram/test" && request.method === "POST") {
+    return jsonResponse(await sendQuantTelegramTest(env));
   }
 
   if (pathname === "/api/admin/system-status" && request.method === "GET") {

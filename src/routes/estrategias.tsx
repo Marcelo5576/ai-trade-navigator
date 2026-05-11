@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageShell } from "@/components/trading/PageShell";
 import { Zap, TrendingUp, Repeat, LineChart, Shield, Layers } from "lucide-react";
+import { useApiResource } from "@/hooks/use-api-resource";
+import { summarizeOpportunityBoard } from "@/lib/quant-adapters";
+import type { QuantBridgeEnvelope, QuantOpportunityBoard } from "@/types/quant";
 
 export const Route = createFileRoute("/estrategias")({
   head: () => ({
@@ -9,81 +12,59 @@ export const Route = createFileRoute("/estrategias")({
       {
         name: "description",
         content:
-          "Biblioteca de estratégias prontas: trend following, mean reversion, breakout e mais.",
+          "Estratégias e oportunidades validadas pelo ApexQuant, preservadas no Navigator como cockpit SaaS.",
       },
     ],
   }),
   component: Estrategias,
 });
 
-const STRATS = [
-  {
-    icon: TrendingUp,
-    name: "Trend Following EMA",
-    desc: "Cruzamento EMA 9/21 com filtro ADX > 25",
-    roi: "+184%",
-    win: "67%",
-    tf: "15m",
-  },
-  {
-    icon: Repeat,
-    name: "Mean Reversion",
-    desc: "Entrada em RSI extremo com Bollinger 2σ",
-    roi: "+92%",
-    win: "71%",
-    tf: "1h",
-  },
-  {
-    icon: Zap,
-    name: "Opening Range Breakout",
-    desc: "Rompimento do range dos primeiros 30 minutos",
-    roi: "+128%",
-    win: "58%",
-    tf: "5m",
-  },
-  {
-    icon: LineChart,
-    name: "Momentum Multi-Asset",
-    desc: "Top 5 ativos por força relativa de 90 dias",
-    roi: "+201%",
-    win: "62%",
-    tf: "1d",
-  },
-  {
-    icon: Shield,
-    name: "Volatility Hedge",
-    desc: "Long VXX em sinais de risk-off da curva",
-    roi: "+74%",
-    win: "55%",
-    tf: "1d",
-  },
-  {
-    icon: Layers,
-    name: "Pairs Trading",
-    desc: "Long/short em pares cointegrados PETR4/VALE3",
-    roi: "+108%",
-    win: "69%",
-    tf: "1h",
-  },
-];
+const ICONS = [TrendingUp, Repeat, Zap, LineChart, Shield, Layers];
 
 function Estrategias() {
+  const { data } = useApiResource<
+    QuantBridgeEnvelope<{ status?: string; board?: QuantOpportunityBoard }>
+  >(
+    "/api/quant/opportunities",
+    {
+      ok: false,
+      source: "fallback",
+      upstream: "",
+      warning: null,
+      timestamp: "",
+      data: null,
+    },
+    { refreshMs: 20000 },
+  );
+
+  const board = summarizeOpportunityBoard(data.data?.board);
+  const cards = [...(board.topPriority || []), ...(board.ranked || [])].slice(0, 6);
+
   return (
     <PageShell
       eyebrow="Estratégias"
       title={
         <>
-          Biblioteca de <span className="gradient-text">edges quantitativos</span>
+          Biblioteca de <span className="gradient-text">oportunidades vivas</span>
         </>
       }
-      description="Estratégias auditadas, com código aberto e backtest reproduzível. Clone, adapte e implante."
+      description="Em vez de mock estático, o Navigator agora consome o ranking do Quant para destacar setups fortes, watch-only e ativos ignorados."
     >
+      {data.warning ? (
+        <section className="max-w-[1400px] mx-auto px-6 pt-6">
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+            Ranking do Quant em fallback: {data.warning}
+          </div>
+        </section>
+      ) : null}
+
       <section className="max-w-[1400px] mx-auto px-6 py-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {STRATS.map((s) => {
-          const Icon = s.icon;
+        {cards.map((item, index) => {
+          const Icon = ICONS[index % ICONS.length];
+          const payload = (item.payload as Record<string, unknown> | undefined) || item;
           return (
             <div
-              key={s.name}
+              key={`${item.symbol || "asset"}-${index}`}
               className="card-elevated rounded-2xl p-6 hover:border-primary/40 transition hover:-translate-y-0.5"
             >
               <div
@@ -92,32 +73,48 @@ function Estrategias() {
               >
                 <Icon className="w-5 h-5 text-background" />
               </div>
-              <h3 className="font-display text-lg font-bold">{s.name}</h3>
-              <p className="text-sm text-muted-foreground mt-1 mb-4">{s.desc}</p>
+              <h3 className="font-display text-lg font-bold">{String(item.symbol || "Ativo")}</h3>
+              <p className="text-sm text-muted-foreground mt-1 mb-4">
+                {String(
+                  payload.opportunity_label ||
+                    payload.status_label ||
+                    "Setup quantitativo em observação",
+                )}
+              </p>
               <div className="grid grid-cols-3 gap-2 mb-4">
                 <div className="bg-secondary/40 rounded-lg p-2">
-                  <div className="text-[10px] uppercase text-muted-foreground">ROI</div>
-                  <div className="font-mono font-bold text-bull">{s.roi}</div>
+                  <div className="text-[10px] uppercase text-muted-foreground">Score</div>
+                  <div className="font-mono font-bold text-bull">
+                    {String(payload.opportunity_score || payload.score || 0)}
+                  </div>
                 </div>
                 <div className="bg-secondary/40 rounded-lg p-2">
-                  <div className="text-[10px] uppercase text-muted-foreground">Win</div>
-                  <div className="font-mono font-bold">{s.win}</div>
+                  <div className="text-[10px] uppercase text-muted-foreground">Dir</div>
+                  <div className="font-mono font-bold">{String(payload.direction || "NEUTRO")}</div>
                 </div>
                 <div className="bg-secondary/40 rounded-lg p-2">
-                  <div className="text-[10px] uppercase text-muted-foreground">TF</div>
-                  <div className="font-mono font-bold">{s.tf}</div>
+                  <div className="text-[10px] uppercase text-muted-foreground">Conf</div>
+                  <div className="font-mono font-bold">{String(payload.confidence_score || 0)}</div>
                 </div>
               </div>
               <div className="flex gap-2">
-                <button
-                  className="flex-1 text-xs font-medium py-2 rounded-lg text-primary-foreground"
+                <a
+                  href="https://trade.apexgol.com.br/oportunidades"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex-1 text-center text-xs font-medium py-2 rounded-lg text-primary-foreground"
                   style={{ background: "var(--gradient-neon)" }}
                 >
-                  Implantar
-                </button>
-                <button className="flex-1 text-xs font-medium py-2 rounded-lg bg-secondary">
-                  Backtest
-                </button>
+                  Abrir Quant
+                </a>
+                <a
+                  href="https://trade.apexgol.com.br/operacao"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex-1 text-center text-xs font-medium py-2 rounded-lg bg-secondary"
+                >
+                  Operação
+                </a>
               </div>
             </div>
           );

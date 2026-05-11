@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { ASSETS, type Asset } from "./mockData";
 import { Sparkline } from "./Sparkline";
 
@@ -10,9 +10,22 @@ function statusColor(s: Asset["status"]) {
   return "var(--bear)";
 }
 
-export function Scanner() {
-  const [filter, setFilter] = useState<typeof FILTERS[number]>("Todos");
-  const list = ASSETS.filter((a) => {
+export function Scanner({
+  assets,
+  title = "Scanner de ativos",
+  description = "OHLCV, indicadores, TradeScore e gestão de risco em leitura única.",
+  warning,
+  actions,
+}: {
+  assets?: Asset[];
+  title?: string;
+  description?: string;
+  warning?: string | null;
+  actions?: ReactNode;
+}) {
+  const [filter, setFilter] = useState<(typeof FILTERS)[number]>("Todos");
+  const dataset = assets?.length ? assets : ASSETS;
+  const list = dataset.filter((a) => {
     if (filter === "Aprovados") return a.status === "APROVADO";
     if (filter === "Monitorar") return a.status === "MONITORAR";
     if (filter === "Ações") return a.type === "Ação" || a.type === "ETF";
@@ -24,40 +37,56 @@ export function Scanner() {
     <section className="max-w-[1400px] mx-auto px-6 py-8">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
         <div>
-          <h2 className="font-display text-3xl font-bold">Scanner de ativos</h2>
-          <p className="text-muted-foreground text-sm mt-1">OHLCV, indicadores, TradeScore e gestão de risco em leitura única.</p>
+          <h2 className="font-display text-3xl font-bold">{title}</h2>
+          <p className="text-muted-foreground text-sm mt-1">{description}</p>
         </div>
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide">
-          {FILTERS.map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap border transition-colors ${
-                filter === f
-                  ? "border-primary text-primary-foreground"
-                  : "border-border bg-secondary/40 text-muted-foreground hover:text-foreground"
-              }`}
-              style={filter === f ? { background: "var(--gradient-neon)" } : {}}
-            >
-              {f}
-            </button>
-          ))}
+        <div className="flex flex-col items-stretch gap-3 md:items-end">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+            {FILTERS.map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap border transition-colors ${
+                  filter === f
+                    ? "border-primary text-primary-foreground"
+                    : "border-border bg-secondary/40 text-muted-foreground hover:text-foreground"
+                }`}
+                style={filter === f ? { background: "var(--gradient-neon)" } : {}}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+          {actions}
         </div>
       </div>
+      {warning ? (
+        <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+          {warning}
+        </div>
+      ) : null}
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {list.map((a) => {
           const positive = a.change >= 0;
           return (
-            <div key={a.symbol} className="card-elevated rounded-2xl p-5 hover:border-primary/40 transition-all hover:-translate-y-0.5 group">
+            <div
+              key={a.symbol}
+              className="card-elevated rounded-2xl p-5 hover:border-primary/40 transition-all hover:-translate-y-0.5 group"
+            >
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <div className="font-display font-bold text-xl">{a.symbol}</div>
-                  <div className="text-xs text-muted-foreground">{a.name} · {a.type}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {a.name} · {a.type}
+                  </div>
                 </div>
                 <span
                   className="text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider"
-                  style={{ background: `color-mix(in oklab, ${statusColor(a.status)} 15%, transparent)`, color: statusColor(a.status) }}
+                  style={{
+                    background: `color-mix(in oklab, ${statusColor(a.status)} 15%, transparent)`,
+                    color: statusColor(a.status),
+                  }}
                 >
                   {a.status}
                 </span>
@@ -65,10 +94,17 @@ export function Scanner() {
 
               <div className="flex items-baseline justify-between mb-2">
                 <div className="font-mono text-2xl font-bold">
-                  {a.type === "Cripto" || a.symbol === "BTC" ? "$" : "R$"}{a.price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  {a.type === "Cripto" || a.symbol === "BTC" ? "$" : "R$"}
+                  {a.price.toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </div>
-                <div className={`font-mono text-sm font-bold ${positive ? "text-bull" : "text-bear"}`}>
-                  {positive ? "+" : ""}{a.change.toFixed(2)}%
+                <div
+                  className={`font-mono text-sm font-bold ${positive ? "text-bull" : "text-bear"}`}
+                >
+                  {positive ? "+" : ""}
+                  {a.change.toFixed(2)}%
                 </div>
               </div>
 
@@ -79,7 +115,10 @@ export function Scanner() {
                 <span className="font-mono font-bold">{a.score}/100</span>
               </div>
               <div className="h-1.5 rounded-full bg-secondary overflow-hidden mb-4">
-                <div className="h-full rounded-full" style={{ width: `${a.score}%`, background: "var(--gradient-neon)" }} />
+                <div
+                  className="h-full rounded-full"
+                  style={{ width: `${a.score}%`, background: "var(--gradient-neon)" }}
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-xs">
@@ -92,7 +131,9 @@ export function Scanner() {
                   ["ATR", `${a.atr.toFixed(2)}%`],
                 ].map(([k, v]) => (
                   <div key={k} className="bg-secondary/40 rounded-lg px-2.5 py-1.5">
-                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{k}</div>
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {k}
+                    </div>
                     <div className="font-mono font-semibold">{v}</div>
                   </div>
                 ))}
